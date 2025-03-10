@@ -1,3 +1,4 @@
+import "./App.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -81,7 +82,11 @@ function App() {
 
   // Hàm định dạng ngày thành DD/MM/YYYY
   const formatDate = (dateString) => {
-    if (!dateString || typeof dateString !== "string" || isNaN(Date.parse(dateString))) {
+    if (
+      !dateString ||
+      typeof dateString !== "string" ||
+      isNaN(Date.parse(dateString))
+    ) {
       return "N/A"; // Hoặc giá trị mặc định khác
     }
     return new Date(dateString).toLocaleDateString("vi-VN", {
