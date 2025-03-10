@@ -64,8 +64,8 @@ function App() {
       name: project.name,
       client: project.client,
       description: project.description,
-      deadline: project.deadline, // Đã là YYYY-MM-DD
-      createdAt: project.createdAt, // Đã là YYYY-MM-DD
+      deadline: project.deadline, // YYYY-MM-DD
+      createdAt: project.createdAt, // YYYY-MM-DD
     });
     setEditingId(project._id);
   };
@@ -79,9 +79,11 @@ function App() {
     }
   };
 
-  // Hàm định dạng ngày thành DD/MM/YYYY cho hiển thị
+  // Hàm định dạng ngày thành DD/MM/YYYY
   const formatDate = (dateString) => {
-    if (!dateString || isNaN(new Date(dateString))) return "Invalid Date";
+    if (!dateString || typeof dateString !== "string" || isNaN(Date.parse(dateString))) {
+      return "N/A"; // Hoặc giá trị mặc định khác
+    }
     return new Date(dateString).toLocaleDateString("vi-VN", {
       day: "2-digit",
       month: "2-digit",

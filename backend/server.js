@@ -21,7 +21,7 @@ const ProjectSchema = new mongoose.Schema({
   client: { type: String, required: true },
   description: { type: String, required: true },
   deadline: { type: Date, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now } // Đảm bảo luôn có giá trị
 });
 
 const Project = mongoose.model("Project", ProjectSchema);
@@ -38,14 +38,14 @@ app.post("/projects", async (req, res) => {
       name,
       client,
       description,
-      deadline: new Date(deadline), // Chuyển từ YYYY-MM-DD
+      deadline: new Date(deadline),
     });
     const savedProject = await newProject.save();
 
     res.status(201).json({
       ...savedProject._doc,
-      deadline: savedProject.deadline.toISOString().split("T")[0], // YYYY-MM-DD
-      createdAt: savedProject.createdAt.toISOString().split("T")[0], // YYYY-MM-DD
+      deadline: savedProject.deadline.toISOString().split("T")[0],
+      createdAt: savedProject.createdAt.toISOString().split("T")[0],
     });
   } catch (error) {
     console.error("Error creating project:", error);
@@ -57,11 +57,16 @@ app.post("/projects", async (req, res) => {
 app.get("/projects", async (req, res) => {
   try {
     const projects = await Project.find();
-    const formattedProjects = projects.map((project) => ({
-      ...project._doc,
-      deadline: project.deadline.toISOString().split("T")[0], // YYYY-MM-DD
-      createdAt: project.createdAt.toISOString().split("T")[0], // YYYY-MM-DD
-    }));
+    const formattedProjects = projects.map((project) => {
+      const createdAt = project.createdAt
+        ? project.createdAt.toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0]; // Fallback nếu createdAt bị thiếu
+      return {
+        ...project._doc,
+        deadline: project.deadline.toISOString().split("T")[0],
+        createdAt,
+      };
+    });
     res.json(formattedProjects);
   } catch (error) {
     console.error("Error fetching projects:", error);
@@ -83,7 +88,7 @@ app.put("/projects/:id", async (req, res) => {
         name,
         client,
         description,
-        deadline: new Date(deadline), // Chuyển từ YYYY-MM-DD
+        deadline: new Date(deadline),
       },
       { new: true, runValidators: true }
     );
@@ -94,8 +99,8 @@ app.put("/projects/:id", async (req, res) => {
 
     res.json({
       ...updatedProject._doc,
-      deadline: updatedProject.deadline.toISOString().split("T")[0], // YYYY-MM-DD
-      createdAt: updatedProject.createdAt.toISOString().split("T")[0], // YYYY-MM-DD
+      deadline: updatedProject.deadline.toISOString().split("T")[0],
+      createdAt: updatedProject.createdAt.toISOString().split("T")[0],
     });
   } catch (error) {
     console.error("Error updating project:", error);
